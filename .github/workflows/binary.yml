@@ -49,4 +49,4 @@ jobs:
           scan_summary_output_type: "table"
           pr: "true"
           enable_github_action_token: "true"
-          additional_args: "--package --path='${{ github.event.inputs.binary_path }}' --project-name='${{ github.event.inputs.project_name }}'"
+          additional_args: "--package --path=${{ github.event.inputs.binary_path }} --project-name=${{ github.event.inputs.project_name }}"
