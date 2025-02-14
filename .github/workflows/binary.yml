@@ -1,0 +1,52 @@
+name: Endor Labs Binary Scan
+on:
+  workflow_dispatch:
+    inputs:
+      api:
+        description: "Enter the target Endor Labs API"
+        required: true
+        type: choice
+        default: https://api.endorlabs.com
+        options:
+          - https://api.staging.endorlabs.com
+          - https://api.endorlabs.com
+      tenant_name:
+        description: "Enter your Endor Labs namespace?"
+        required: true
+        default: "demo.binary"
+        type: string
+      binary_path:
+        description: "Enter the path to the binary you'd like to scan"
+        required: true
+        default: "endor-java-webapp-demo.jar"
+        type: string
+      project_name:
+        description: "Enter a name for your project"
+        required: true
+        default: "SuperSecretApp"
+        type: string
+jobs:
+  scan-repo:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: microsoft
+          java-version: "17"
+
+      - name: Endor Labs Workflow Dispatch
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        uses: endorlabs/github-action@main
+        with:
+          namespace: "${{ github.event.inputs.tenant_name }}"
+          scan_summary_output_type: "table"
+          pr: "true"
+          enable_github_action_token: "true"
+          additional_args: "--package --path='${{ github.event.inputs.binary_path }}' --project-name='${{ github.event.inputs.project_name }}'"
